@@ -9,9 +9,9 @@ const COLUMNS = [
   { label: "Processed" },
   { label: "Students evaluated", cls: "num" },
   { label: "Total pages", cls: "num" },
-  { label: "1-10 pages (Rs 5)", cls: "num" },
-  { label: "11-20 pages (Rs 10)", cls: "num" },
-  { label: "> 20 pages (Rs 15)", cls: "num" },
+  { label: "1-10 pages (₹5)", cls: "num" },
+  { label: "11-20 pages (₹10)", cls: "num" },
+  { label: "> 20 pages (₹15)", cls: "num" },
   { label: "Total price", cls: "num" },
 ];
 
