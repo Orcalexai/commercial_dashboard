@@ -18,23 +18,30 @@ function normalizeSnapshot(value) {
 
 // Per-student page pricing (INR): a student is bucketed by their total pages
 // (summed across their files), and each bucket carries a flat correction price.
-const PRICE_LT5 = 5; //  < 5 pages
-const PRICE_5_15 = 10; // 5–15 pages (inclusive)
-const PRICE_GT15 = 15; //  > 15 pages
+const PRICE_1_TO_10 = 5;
+const PRICE_11_TO_20 = 10;
+const PRICE_ABOVE_20 = 15;
 
 // Compute page/pricing stats for one exam from student_results_details:
 //  - totalPages: sum of pages across every student/file (null if no page data)
-//  - lt5 / b5to15 / gt15: number of students in each page bucket
+//  - b1to10 / b11to20 / above20: number of students in each page bucket
 //  - totalPrice: INR total across students by bucket
 export function pageStats(item) {
-  const empty = { totalPages: null, lt5: 0, b5to15: 0, gt15: 0, totalPrice: 0, hasData: false };
+  const empty = {
+    totalPages: null,
+    b1to10: 0,
+    b11to20: 0,
+    above20: 0,
+    totalPrice: 0,
+    hasData: false,
+  };
   const details = item?.student_results_details;
   if (!details || typeof details !== "object") return empty;
 
   let totalPages = 0;
-  let lt5 = 0;
-  let b5to15 = 0;
-  let gt15 = 0;
+  let b1to10 = 0;
+  let b11to20 = 0;
+  let above20 = 0;
   let totalPrice = 0;
   let hasData = false;
 
@@ -48,24 +55,24 @@ export function pageStats(item) {
         studentHasPages = true;
       }
     }
-    if (!studentHasPages) continue; // no page data for this student — don't bucket/charge
+    if (!studentHasPages) continue;
 
     hasData = true;
     totalPages += studentPages;
-    if (studentPages < 5) {
-      lt5 += 1;
-      totalPrice += PRICE_LT5;
-    } else if (studentPages <= 15) {
-      b5to15 += 1;
-      totalPrice += PRICE_5_15;
+    if (studentPages <= 10) {
+      b1to10 += 1;
+      totalPrice += PRICE_1_TO_10;
+    } else if (studentPages <= 20) {
+      b11to20 += 1;
+      totalPrice += PRICE_11_TO_20;
     } else {
-      gt15 += 1;
-      totalPrice += PRICE_GT15;
+      above20 += 1;
+      totalPrice += PRICE_ABOVE_20;
     }
   }
 
   return hasData
-    ? { totalPages, lt5, b5to15, gt15, totalPrice, hasData }
+    ? { totalPages, b1to10, b11to20, above20, totalPrice, hasData }
     : empty;
 }
 
@@ -105,7 +112,7 @@ function FileEntry({ entry }) {
     );
   }
 
-  // Unknown shape — show it as readable JSON rather than crashing.
+  // Unknown shape - show it as readable JSON rather than crashing.
   const text =
     entry && typeof entry === "object"
       ? JSON.stringify(entry, null, 2)
@@ -163,40 +170,40 @@ export default function MetadataRow({ item, defaultOpen = false }) {
           </button>
         </td>
         <td>
-          <div className="strong">{exam.name || "—"}</div>
+          <div className="strong">{exam.name || "-"}</div>
           {exam.exam_type && <div className="sub">{exam.exam_type}</div>}
         </td>
         <td>
-          {exam.teacher_fullname || exam.teacher_username || "—"}
+          {exam.teacher_fullname || exam.teacher_username || "-"}
           {exam.teacher_username && (
             <div className="sub">@{exam.teacher_username}</div>
           )}
         </td>
-        <td>{exam.school_code || "—"}</td>
+        <td>{exam.school_code || "-"}</td>
         <td>
-          {exam.class_section || "—"}
-          {exam.section ? ` · ${exam.section}` : ""}
+          {exam.class_section || "-"}
+          {exam.section ? ` - ${exam.section}` : ""}
         </td>
         <td>{formatDate(exam.processed_at)}</td>
         <td className="num">{formatNumber(item.evaluated_roll_count)}</td>
         <td className="num">
           {stats.totalPages == null ? (
-            <span className="badge-zero">—</span>
+            <span className="badge-zero">-</span>
           ) : (
             <span className="pages-value">{formatNumber(stats.totalPages)}</span>
           )}
         </td>
         <td className="num">
-          {stats.hasData ? <BucketCount value={stats.lt5} /> : <span className="badge-zero">—</span>}
+          {stats.hasData ? <BucketCount value={stats.b1to10} /> : <span className="badge-zero">-</span>}
         </td>
         <td className="num">
-          {stats.hasData ? <BucketCount value={stats.b5to15} /> : <span className="badge-zero">—</span>}
+          {stats.hasData ? <BucketCount value={stats.b11to20} /> : <span className="badge-zero">-</span>}
         </td>
         <td className="num">
-          {stats.hasData ? <BucketCount value={stats.gt15} /> : <span className="badge-zero">—</span>}
+          {stats.hasData ? <BucketCount value={stats.above20} /> : <span className="badge-zero">-</span>}
         </td>
         <td className="num strong">
-          {stats.hasData ? formatInr(stats.totalPrice) : <span className="badge-zero">—</span>}
+          {stats.hasData ? formatInr(stats.totalPrice) : <span className="badge-zero">-</span>}
         </td>
       </tr>
 
@@ -204,12 +211,12 @@ export default function MetadataRow({ item, defaultOpen = false }) {
         <tr className="detail-row">
           <td colSpan={12}>
             <ErrorBoundary compact>
-            <div className="detail-panel">
-              <section className="detail-section">
-                <h4>Student result files</h4>
-                <StudentResults details={item.student_results_details} />
-              </section>
-            </div>
+              <div className="detail-panel">
+                <section className="detail-section">
+                  <h4>Student result files</h4>
+                  <StudentResults details={item.student_results_details} />
+                </section>
+              </div>
             </ErrorBoundary>
           </td>
         </tr>
