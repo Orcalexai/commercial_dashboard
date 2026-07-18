@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { LockIcon, AlertIcon } from "./Icons.jsx";
+import { AlertIcon } from "./Icons.jsx";
 
 // Browser Web Login (POST /api/web-token/). On success the backend sets the
 // HTTP-only access_token / refresh_token cookies; we just flip auth state.
@@ -31,7 +31,7 @@ export default function Login() {
         <form className="login-card" onSubmit={handleSubmit}>
           <h1 className="login-title">Correction Console</h1>
           <p className="login-subtitle">
-            Internal exam-correction audit · admin access only
+            Internal exam-correction audit - admin access only
           </p>
 
           {error && (
@@ -61,7 +61,7 @@ export default function Login() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
           </label>
@@ -71,13 +71,8 @@ export default function Login() {
             type="submit"
             disabled={submitting}
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            {submitting ? "Signing in..." : "Sign in"}
           </button>
-
-          <p className="login-note">
-            <LockIcon size={13} />
-            Secure cookie session via <code>/api/web-token/</code>
-          </p>
         </form>
       </div>
     </div>
