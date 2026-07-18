@@ -1,5 +1,7 @@
 import MetadataRow from "./MetadataRow.jsx";
 
+const RUPEE = "\u20B9";
+
 const COLUMNS = [
   { label: "", cls: "col-expand" },
   { label: "Exam" },
@@ -9,9 +11,10 @@ const COLUMNS = [
   { label: "Processed" },
   { label: "Students evaluated", cls: "num" },
   { label: "Total pages", cls: "num" },
-  { label: "1-10 pages (₹5)", cls: "num" },
-  { label: "11-20 pages (₹10)", cls: "num" },
-  { label: "> 20 pages (₹15)", cls: "num" },
+  { label: `1-10 pages (${RUPEE}5)`, cls: "num" },
+  { label: `11-20 pages (${RUPEE}10)`, cls: "num" },
+  { label: `21-30 pages (${RUPEE}15)`, cls: "num" },
+  { label: `> 30 pages (${RUPEE}20)`, cls: "num" },
   { label: "Total price", cls: "num" },
 ];
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { fetchExamMetadata } from "../api/client.js";
-import { excludeSelfExams } from "../utils/filters.js";
+import { excludeHiddenExams } from "../utils/filters.js";
 import FilterBar from "./FilterBar.jsx";
 import SummaryCards from "./SummaryCards.jsx";
 import MetadataTable from "./MetadataTable.jsx";
@@ -48,15 +48,14 @@ export default function Dashboard() {
 
   const initials = (username || "?").slice(0, 2).toUpperCase();
 
-  // Hide student self-exams (no server-side exam-type filter is available).
-  const results = excludeSelfExams(page?.results || []);
+  // Hide student self-exams and HPS records client-side when the API returns them.
+  const results = excludeHiddenExams(page?.results || []);
   // When everything fits on one page, the filtered length is the true total.
   // Across multiple pages the exact filtered total is unknown server-side, so
   // we fall back to the API's count.
   const isSinglePage = page ? !page.next && !page.previous : true;
   const examCount = page ? (isSinglePage ? results.length : page.count || 0) : 0;
-  const pageSize =
-    Number(page?.page_size) || Number(filters.page_size) || 20;
+  const pageSize = Number(page?.page_size) || Number(filters.page_size) || 20;
 
   return (
     <div className="dashboard">
@@ -97,11 +96,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <MetadataTable
-            results={results}
-            loading={loading}
-            pageSize={pageSize}
-          />
+          <MetadataTable results={results} loading={loading} pageSize={pageSize} />
 
           {page && (
             <Pagination

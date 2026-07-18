@@ -20,18 +20,20 @@ function normalizeSnapshot(value) {
 // (summed across their files), and each bucket carries a flat correction price.
 const PRICE_1_TO_10 = 5;
 const PRICE_11_TO_20 = 10;
-const PRICE_ABOVE_20 = 15;
+const PRICE_21_TO_30 = 15;
+const PRICE_ABOVE_30 = 20;
 
 // Compute page/pricing stats for one exam from student_results_details:
 //  - totalPages: sum of pages across every student/file (null if no page data)
-//  - b1to10 / b11to20 / above20: number of students in each page bucket
+//  - b1to10 / b11to20 / b21to30 / above30: number of students in each page bucket
 //  - totalPrice: INR total across students by bucket
 export function pageStats(item) {
   const empty = {
     totalPages: null,
     b1to10: 0,
     b11to20: 0,
-    above20: 0,
+    b21to30: 0,
+    above30: 0,
     totalPrice: 0,
     hasData: false,
   };
@@ -41,7 +43,8 @@ export function pageStats(item) {
   let totalPages = 0;
   let b1to10 = 0;
   let b11to20 = 0;
-  let above20 = 0;
+  let b21to30 = 0;
+  let above30 = 0;
   let totalPrice = 0;
   let hasData = false;
 
@@ -65,14 +68,17 @@ export function pageStats(item) {
     } else if (studentPages <= 20) {
       b11to20 += 1;
       totalPrice += PRICE_11_TO_20;
+    } else if (studentPages <= 30) {
+      b21to30 += 1;
+      totalPrice += PRICE_21_TO_30;
     } else {
-      above20 += 1;
-      totalPrice += PRICE_ABOVE_20;
+      above30 += 1;
+      totalPrice += PRICE_ABOVE_30;
     }
   }
 
   return hasData
-    ? { totalPages, b1to10, b11to20, above20, totalPrice, hasData }
+    ? { totalPages, b1to10, b11to20, b21to30, above30, totalPrice, hasData }
     : empty;
 }
 
@@ -175,9 +181,7 @@ export default function MetadataRow({ item, defaultOpen = false }) {
         </td>
         <td>
           {exam.teacher_fullname || exam.teacher_username || "-"}
-          {exam.teacher_username && (
-            <div className="sub">@{exam.teacher_username}</div>
-          )}
+          {exam.teacher_username && <div className="sub">@{exam.teacher_username}</div>}
         </td>
         <td>{exam.school_code || "-"}</td>
         <td>
@@ -200,7 +204,10 @@ export default function MetadataRow({ item, defaultOpen = false }) {
           {stats.hasData ? <BucketCount value={stats.b11to20} /> : <span className="badge-zero">-</span>}
         </td>
         <td className="num">
-          {stats.hasData ? <BucketCount value={stats.above20} /> : <span className="badge-zero">-</span>}
+          {stats.hasData ? <BucketCount value={stats.b21to30} /> : <span className="badge-zero">-</span>}
+        </td>
+        <td className="num">
+          {stats.hasData ? <BucketCount value={stats.above30} /> : <span className="badge-zero">-</span>}
         </td>
         <td className="num strong">
           {stats.hasData ? formatInr(stats.totalPrice) : <span className="badge-zero">-</span>}
@@ -209,7 +216,7 @@ export default function MetadataRow({ item, defaultOpen = false }) {
 
       {open && (
         <tr className="detail-row">
-          <td colSpan={12}>
+          <td colSpan={13}>
             <ErrorBoundary compact>
               <div className="detail-panel">
                 <section className="detail-section">
