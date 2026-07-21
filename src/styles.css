@@ -1,5 +1,5 @@
 /* =========================================================================
-   Exam Correction Admin — light glassmorphism design system
+   Exam Correction Admin - light glassmorphism design system
    Palette is restrained: one indigo accent, reserved status hues, neutral ink.
    Glass is applied to the chrome (topbar, cards, panels); the data table stays
    crisp and high-contrast because dense audit data must read cleanly.
@@ -42,7 +42,7 @@
   --r-lg: 20px;
   --r-xl: 26px;
 
-  /* Elevation — soft, wide, low-opacity layered shadows */
+  /* Elevation - soft, wide, low-opacity layered shadows */
   --sh-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04);
   --sh-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
   --sh-lg: 0 18px 40px -12px rgba(15, 23, 42, 0.16),
@@ -84,7 +84,7 @@ body {
   position: relative;
 }
 
-/* Aurora canvas — faint, fixed, so glass has something to refract. */
+/* Aurora canvas - faint, fixed, so glass has something to refract. */
 body::before {
   content: "";
   position: fixed;
@@ -349,7 +349,7 @@ code {
 /* ---------- KPI tiles ---------- */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 320px));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 18px;
   transition: opacity 0.2s;
@@ -357,6 +357,7 @@ code {
 .kpi-row.is-loading { opacity: 0.6; }
 .kpi-card {
   position: relative;
+  min-width: 0;
   overflow: hidden;
   background: var(--glass-strong);
   backdrop-filter: blur(18px) saturate(1.5);
@@ -397,7 +398,7 @@ code {
   color: var(--ink-500);
 }
 .kpi-value {
-  font-size: 27px;
+  font-size: clamp(22px, 1.65vw, 27px);
   font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -537,7 +538,7 @@ code {
 }
 .student-count svg { color: var(--ink-400); }
 
-/* Pages is the headline per-exam metric — give it a little emphasis. */
+/* Pages is the headline per-exam metric - give it a little emphasis. */
 .pages-value {
   display: inline-block;
   min-width: 34px;
@@ -773,6 +774,14 @@ code {
 .notif-time { font-size: 11px; color: var(--ink-400); padding-left: 3px; font-variant-numeric: tabular-nums; }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 1200px) {
+  .kpi-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 560px) {
   .kpi-row { grid-template-columns: 1fr; }
   .page { padding: 16px; }
